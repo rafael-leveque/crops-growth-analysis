@@ -1,2 +1,4 @@
 planetary_computer==1.0.0
 pystac_client==0.8.2
+shapely==2.0.5
+matplotlib==3.9.0
