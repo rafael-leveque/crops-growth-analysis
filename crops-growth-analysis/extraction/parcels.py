@@ -8,17 +8,17 @@ from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
 
 @dataclass
-class Field:
+class Parcel:
     id: str
     polygon: Polygon
     planetarium_data = None
 
-def read_csv(file_path: str) -> list[Field]:
+def read_csv(file_path: str) -> list[Parcel]:
     """
     Read a parcel csv file and keep only the id and geometry columns
     Return a list of parcels with an ID and a polygon
     """
-    fields: list[Field] = []
+    parcels: list[Parcel] = []
     with open(file_path, 'r') as file:
         reader = csv.reader(file)
         # Skip header
@@ -26,29 +26,29 @@ def read_csv(file_path: str) -> list[Field]:
         for row in reader:
             id = row[0]
             polygon = shapely.from_wkt(row[7])
-            fields.append(Field(id, polygon))
-    return fields
+            parcels.append(Parcel(id, polygon))
+    return parcels
 
-def read_maize_fields():
+def read_maize():
     """
-    Read maize data from csv file
+    Read maize parcels from csv file
     Result is a list of parcels with an ID and a polygon
     """
     return read_csv("data/maize.csv")
 
-def read_tournesol_fields():
+def read_tournesol():
     """
     Read tournesol data from csv file
     Result is a list of parcels with an ID and a polygon
     """
     return read_csv("data/tournesol.csv")
 
-def display_fields(title: str, fields: list[Field]):
+def display_parcels(title: str, parcels: list[Parcel]):
     """
     Plot the data on a map
     """
     plt.figure()
-    for id, polygon in fields:
+    for id, polygon in parcels:
         x, y = polygon.exterior.xy
         center = polygon.centroid
 

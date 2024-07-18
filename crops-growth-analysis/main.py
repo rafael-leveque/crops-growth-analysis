@@ -1,22 +1,25 @@
-from extraction import data
+from extraction import parcels
 from extraction.planetarium import Planetarium
 
 def main():
-    # Read csv data
-    maize_fields = data.read_maize_fields()
-    tournesol_fields = data.read_tournesol_fields()
+    # Read csv parcels
+    maize_parcels = parcels.read_maize()
+    tournesol_parcels = parcels.read_tournesol()
 
-    # Display data
-    # extraction.data.display_data("Maize", maize_data)
-    # extraction.data.display_data("Tournesol", tournesol_data)
-    # extraction.data.display_data("All", maize_data + tournesol_data)
+    # Display parcels
+    # extraction.parcels.display_parcels("Maize", maize_parcels)
+    # extraction.parcels.display_parcels("Tournesol", tournesol_parcels)
+    # extraction.parcels.display_parcels("All", maize_data + tournesol_parcels)
 
     # Search planetarium data
+    sample = maize_parcels[0]
     planetarium = Planetarium()
-    sample = maize_fields[0]
-    planetarium_sample = planetarium.search_polygon(sample.polygon).get_all_items()
-    p_item = planetarium_sample[0]
-    print(p_item)
+    i_s = planetarium.search_polygon(sample.polygon)
+    # Print result length
+    print(len(i_s.get_all_items()))
+    # planetarium_sample = planetarium.search_polygon(sample.polygon).get_all_items()
+    # p_item = planetarium_sample[0]
+    # print(p_item)
 
 
 if __name__ == "__main__":
