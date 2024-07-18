@@ -1,0 +1,2 @@
+planetary_computer==1.0.0
+pystac_client==0.8.2
