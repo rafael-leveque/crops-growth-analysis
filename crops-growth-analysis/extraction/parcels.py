@@ -2,11 +2,12 @@ import csv
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 
+from pystac import ItemCollection
 import shapely
 from shapely.geometry import Polygon
 from shapely.ops import transform
 import pyproj
-from extraction.planetarium import SentinelData
+import xarray
 
 
 @dataclass
@@ -14,7 +15,8 @@ class Parcel:
     id: str
     polygon: Polygon
     wgs64_polygon: Polygon
-    sentinel_data: list[SentinelData] = None
+    sentinel_data: ItemCollection = None
+    ndvi: list[xarray.Dataset] = None
 
 
 def read_csv(file_path: str) -> list[Parcel]:
