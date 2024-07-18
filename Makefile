@@ -10,7 +10,14 @@
 	@pip install virtualenv
 	@python -m venv .venv
 
+.PHONY: install
 
 install: .venv
 	# Install requirements
 	.venv/bin/pip install -r requirements.txt
+
+.PHONY: run
+
+run: install
+	# Run the application
+	.venv/bin/python -m crops-growth-analysis
