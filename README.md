@@ -8,7 +8,7 @@ This projects aims to extract NDVI and NDWI values from satellite images and ana
 - The data processing part is responsible for calculating the NDVI and NDWI values from the images. 
 - The data display part is responsible for displaying the NDVI and NDWI values in a graph.
 
-## How to install pyenv
+## Pre-requisites
 
 Install pyenv using the following command:
 
