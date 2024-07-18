@@ -14,9 +14,11 @@ def read_csv(file_path: str) -> list[tuple[str, Polygon]]:
     data: list[tuple[str, Polygon]] = []
     with open(file_path, 'r') as file:
         reader = csv.reader(file)
+        # Skip header
+        next(reader, None)
         for row in reader:
-            id = row[1]
-            polygon = shapely.from_wkt(row[8])
+            id = row[0]
+            polygon = shapely.from_wkt(row[7])
             data.append((id, polygon))
     return data
 
@@ -46,7 +48,7 @@ def display_data(title: str, data: list[tuple[str, Polygon]]):
         # Draw polygon and label it
         plt.plot(x, y, color='blue', linewidth=2)
         plt.fill(x, y, color='skyblue', alpha=0.5)
-        plt.text(center.x, center.y, 'Polygon', fontsize=12, ha='center', va='center', color='black')
+        plt.text(center.x, center.y, id, fontsize=12, ha='center', va='center', color='black')
 
     plt.title(f'{title} parcels')
     plt.grid(True)

@@ -1,6 +1,6 @@
 
 .venv:
-	@echo "---- Check prerequisites and install .venv ----"
+	### Check prerequisites and install .venv ###
 
 	# Check prerequisites
 	@which pyenv || (echo "Please install pyenv first. Check README.md." && exit 1)
@@ -13,11 +13,12 @@
 .PHONY: install
 
 install: .venv
-	# Install requirements
-	.venv/bin/pip install -r requirements.txt
+	### Install requirements ###
+	@.venv/bin/python -m pip install -q --upgrade pip
+	@.venv/bin/pip install -q -r requirements.txt
 
 .PHONY: run
 
 run: install
-	# Run the application
-	.venv/bin/python -m crops-growth-analysis
+	### Run the application ###
+	@.venv/bin/python crops-growth-analysis/main.py
