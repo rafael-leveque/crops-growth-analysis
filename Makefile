@@ -22,3 +22,19 @@ install: .venv
 run: install
 	### Run the application ###
 	@.venv/bin/python crops-growth-analysis/main.py
+
+.PHONY: lint
+
+lint: install
+	### Run linter ###
+	@.venv/bin/pylint crops-growth-analysis
+	@.venv/bin/mypy crops-growth-analysis
+	@.venv/bin/flake8 crops-growth-analysis
+	@.venv/bin/black crops-growth-analysis --check
+	@.venv/bin/isort crops-growth-analysis --check
+
+.PHONY: clean
+
+clean:
+	### Clean the project ###
+	@rm -rf crops-growth-analysis/**/__pycache__

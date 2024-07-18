@@ -1,8 +1,18 @@
+from dataclasses import dataclass
 import planetary_computer
-from pystac_client import Client, ItemSearch
+from pystac import Item
+from pystac_client import Client
 from shapely import Polygon
+from PIL import Image
 
-class Planetarium:
+
+@dataclass
+class SentinelData:
+    item: Item
+    scl: Image.Image = None
+
+
+class Sentinel:
 
     def __init__(self):
         self.__catalog = Client.open(
@@ -10,9 +20,12 @@ class Planetarium:
             modifier=planetary_computer.sign_inplace,
         )
 
-    def search_polygon(self, polygon: Polygon) -> ItemSearch:
-        return self.__catalog.search(
-            collections=["sentinel-2-l2a"],
-            intersects=polygon,
-            datetime="2024",
-        )
+    def search_polygon(self, polygon: Polygon) -> list[SentinelData]:
+        return [
+            SentinelData(item)
+            for item in self.__catalog.search(
+                collections=["sentinel-2-l2a"],
+                intersects=polygon,
+                datetime="2024",
+            ).item_collection()
+        ]

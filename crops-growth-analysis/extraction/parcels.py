@@ -1,13 +1,12 @@
-# Read data csv without panda
-
 import csv
 from dataclasses import dataclass
-import pyproj
-from pystac import ItemCollection
+import matplotlib.pyplot as plt
+
 import shapely
 from shapely.geometry import Polygon
 from shapely.ops import transform
-import matplotlib.pyplot as plt
+import pyproj
+from extraction.planetarium import SentinelData
 
 
 @dataclass
@@ -15,7 +14,7 @@ class Parcel:
     id: str
     polygon: Polygon
     wgs64_polygon: Polygon
-    sentinel_data: ItemCollection = None
+    sentinel_data: list[SentinelData] = None
 
 
 def read_csv(file_path: str) -> list[Parcel]:
@@ -62,16 +61,12 @@ def display_parcels(title: str, parcels: list[Parcel]):
     Plot the data on a map
     """
     plt.figure()
-    for id, polygon in parcels:
+    for _, polygon in parcels:
         x, y = polygon.exterior.xy
-        center = polygon.centroid
 
         # Draw polygon and label it
         plt.plot(x, y, color="blue", linewidth=2)
         plt.fill(x, y, color="skyblue", alpha=0.5)
-        plt.text(
-            center.x, center.y, id, fontsize=12, ha="center", va="center", color="black"
-        )
 
     plt.title(f"{title} fields")
     plt.grid(True)
