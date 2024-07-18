@@ -14,5 +14,5 @@ class Planetarium:
         return self.__catalog.search(
             collections=["sentinel-2-l2a"],
             intersects=polygon,
-            datetime="2020-01-01/2020-12-31",
+            datetime="2024",
         )
