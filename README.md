@@ -2,7 +2,11 @@
 
 ## Introduction
 
-This projects aims to extract NDVI and NDWI values from satellite images and analyze the growth of crops in a given region. The project is divided into three parts: data extraction, data processing and data display. The data extraction part is responsible for downloading the satellite images from the Microsoft Planetarium API, filtering meaningful informations. The data processing part is responsible for calculating the NDVI and NDWI values from the images. The data display part is responsible for displaying the NDVI and NDWI values in a graph.
+This projects aims to extract NDVI and NDWI values from satellite images and analyze the growth of crops in a given region. The project is divided into three parts: data extraction, data processing and data display. 
+
+- The data extraction part is responsible for downloading the satellite images from the Microsoft Planetarium API, filtering meaningful informations. 
+- The data processing part is responsible for calculating the NDVI and NDWI values from the images. 
+- The data display part is responsible for displaying the NDVI and NDWI values in a graph.
 
 ## How to install pyenv
 
