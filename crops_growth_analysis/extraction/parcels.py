@@ -1,22 +1,25 @@
+"""Module to import parcels from csv files (and display them on a map)"""
+
 import csv
 from dataclasses import dataclass
-import matplotlib.pyplot as plt
 
-from pystac import ItemCollection
+import matplotlib.pyplot as plt
+import pyproj
 import shapely
+import xarray
+from pystac import ItemCollection
 from shapely.geometry import Polygon
 from shapely.ops import transform
-import pyproj
-import xarray
 
 
 @dataclass
 class Parcel:
+    """Parcel dataclass, to be used throughout the application"""
     id: str
     polygon: Polygon
     wgs64_polygon: Polygon
-    sentinel_data: ItemCollection = None
-    ndvi: list[xarray.Dataset] = None
+    sentinel_data: ItemCollection = ItemCollection([])
+    ndvi: list[xarray.Dataset] = []
 
 
 def read_csv(file_path: str) -> list[Parcel]:
@@ -25,20 +28,22 @@ def read_csv(file_path: str) -> list[Parcel]:
     Return a list of parcels with an ID and a polygon
     """
     parcels: list[Parcel] = []
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding="utf-8") as file:
         reader = csv.reader(file)
         # Skip header
         next(reader, None)
         for row in reader:
-            id = row[0]
-            polygon = shapely.from_wkt(row[7])
-            wgs64_polygon = transform(
-                pyproj.Transformer.from_crs(
-                    pyproj.CRS("EPSG:2154"), pyproj.CRS("EPSG:4326")
-                ).transform,
-                polygon,
-            )
-            parcels.append(Parcel(id, polygon, wgs64_polygon))
+            parcel_id = row[0]
+            geometry = shapely.from_wkt(row[7])
+            if isinstance(geometry, Polygon):
+                polygon = geometry
+                wgs64_polygon = transform(
+                    pyproj.Transformer.from_crs(
+                        pyproj.CRS("EPSG:2154"), pyproj.CRS("EPSG:4326")
+                    ).transform,
+                    polygon,
+                )
+                parcels.append(Parcel(parcel_id, polygon, wgs64_polygon))
     return parcels
 
 
@@ -59,12 +64,10 @@ def read_tournesol():
 
 
 def display_parcels(title: str, parcels: list[Parcel]):
-    """
-    Plot the data on a map
-    """
+    """Plot the data on a map"""
     plt.figure()
-    for _, polygon in parcels:
-        x, y = polygon.exterior.xy
+    for parcel in parcels:
+        x, y = parcel.polygon.exterior.xy
 
         # Draw polygon and label it
         plt.plot(x, y, color="blue", linewidth=2)

@@ -1,11 +1,10 @@
+"""Module to calculate NDVI and NDMI from Sentinel-2 data"""
+
 import xarray
-from PIL import Image
 
 
-def ndvi(ds: xarray.Dataset) -> xarray.DataArray:
-    """
-    Calculate NDVI only when scl does not have clouds
-    """
+def ndvi_and_ndmi(ds: xarray.Dataset) -> xarray.Dataset:
+    """Filter on SCL and calculate NDVI and NDMI"""
     ds_clean = ds.where(ds["SCL"] < 7 & ds["SCL"] > 1)
     nir = ds_clean["B08"]
     red = ds_clean["B04"]
@@ -13,12 +12,3 @@ def ndvi(ds: xarray.Dataset) -> xarray.DataArray:
     ndvi = (nir - red) / (nir + red)
     ndmi = (nir - swir) / (nir + swir)
     return xarray.Dataset({"NDVI": ndvi, "NDMI": ndmi})
-
-
-def ndmi(dataset: xarray.Dataset) -> Image.Image:
-    """
-    Calculate NDMI
-    """
-    nir = dataset["B08"]
-    swir = dataset["B11"]
-    return (nir - swir) / (nir + swir)

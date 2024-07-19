@@ -1,11 +1,20 @@
-planetary_computer==1.0.0
-pystac_client==0.8.2
-pyproj==3.6.1
+# Basics
 shapely==2.0.5
 matplotlib==3.9.0
 xarray==2024.6.0
+
+# Sentinel
+planetary_computer==1.0.0
+pystac_client==0.8.2
+pyproj==3.6.1
+
+# Development
 mypy==1.10.1
 black==24.4.2
 isort==5.13.2
 flake8==7.1.0
 pylint==3.2.5
+
+# Types
+types-shapely==2.0.0.20240714
+types-requests==2.32.0.20240712
