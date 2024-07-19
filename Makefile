@@ -1,40 +1,53 @@
+.DEFAULT_GOAL := all
+
+.PHONY: all
+
+all : clean install lint run
 
 .venv:
-	### Check prerequisites and install .venv ###
+	$(info ### Check prerequisites and install .venv ###)
+	$(info )
 
-	# Check prerequisites
+	$(info # Check prerequisites)
 	@which pyenv || (echo "Please install pyenv first. Check README.md." && exit 1)
 	@pyenv version || pyenv install || (echo "Cannot install python version. Check README.md." && exit 1)
+	$(info )
 
-	# Install and create venv
+	$(info # Install and create venv)
 	@pip install virtualenv
 	@python -m venv .venv
+	$(info )
 
 .PHONY: install
 
 install: .venv
-	### Install requirements ###
+	$(info ### Install requirements ###)
 	@.venv/bin/python -m pip install -q --upgrade pip
 	@.venv/bin/pip install -q -r requirements.txt
+	$(info )
 
 .PHONY: run
 
 run: install
-	### Run the application ###
-	@.venv/bin/python crops-growth-analysis/main.py
+	$(info ### Run the application ###)
+	@.venv/bin/python crops_growth_analysis/main.py
+	$(info )
 
 .PHONY: lint
 
 lint: install
-	### Run linter ###
-	@.venv/bin/pylint crops-growth-analysis
-	@.venv/bin/mypy crops-growth-analysis
-	@.venv/bin/flake8 crops-growth-analysis
-	@.venv/bin/black crops-growth-analysis --check
-	@.venv/bin/isort crops-growth-analysis --check
+	$(info ### Run linter ###)
+	@.venv/bin/pylint crops_growth_analysis
+	@.venv/bin/mypy crops_growth_analysis
+	@.venv/bin/flake8 crops_growth_analysis
+	@.venv/bin/black crops_growth_analysis --check
+	@.venv/bin/isort crops_growth_analysis --check
+	$(info )
 
 .PHONY: clean
 
 clean:
-	### Clean the project ###
-	@rm -rf crops-growth-analysis/**/__pycache__
+	$(info ### Clean the project ###)
+	@rm -rf .venv
+	@rm -rf crops_growth_analysis/**/__pycache__
+	$(info )
