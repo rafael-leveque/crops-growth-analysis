@@ -49,5 +49,6 @@ lint: install
 clean:
 	$(info ### Clean the project ###)
 	@rm -rf .venv
+	@rm -rf crops_growth_analysis/**/.mypy_cache
 	@rm -rf crops_growth_analysis/**/__pycache__
 	$(info )
