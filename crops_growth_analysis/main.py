@@ -43,8 +43,8 @@ def main():
         parcel.ndvi = []
         for sentinel_data in parcel.sentinel_data:
             dataset = images.get_bands_datasets(sentinel_data)
-            ndvi = calculus.ndvi(dataset)
-            parcel.ndvi.append(ndvi)
+            ndvi_res = calculus.ndvi_and_ndmi(dataset)
+            parcel.ndvi.append(ndvi_res)
 
 
 if __name__ == "__main__":

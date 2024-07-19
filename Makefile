@@ -23,25 +23,25 @@ all : clean install lint run
 install: .venv
 	$(info ### Install requirements ###)
 	@.venv/bin/python -m pip install -q --upgrade pip
-	@.venv/bin/pip install -q -r requirements.txt
+	@.venv/bin/pip install -r requirements.txt
 	$(info )
 
 .PHONY: run
 
-run: install
+run:
 	$(info ### Run the application ###)
 	@.venv/bin/python crops_growth_analysis/main.py
 	$(info )
 
 .PHONY: lint
 
-lint: install
+lint:
 	$(info ### Run linter ###)
+	@.venv/bin/black crops_growth_analysis
+	@.venv/bin/isort crops_growth_analysis
 	@.venv/bin/pylint crops_growth_analysis
 	@.venv/bin/mypy crops_growth_analysis
 	@.venv/bin/flake8 crops_growth_analysis
-	@.venv/bin/black crops_growth_analysis
-	@.venv/bin/isort crops_growth_analysis
 	$(info )
 
 .PHONY: clean

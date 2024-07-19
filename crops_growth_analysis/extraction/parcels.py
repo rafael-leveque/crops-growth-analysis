@@ -45,6 +45,8 @@ def read_csv(file_path: str) -> list[Parcel]:
                     polygon,
                 )
                 parcels.append(Parcel(parcel_id, polygon, wgs64_polygon))
+            else:
+                raise ValueError(f"{parcel_id} is not a polygon")
     return parcels
 
 
