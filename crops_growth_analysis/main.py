@@ -4,8 +4,8 @@ Main script to run the crops growth analysis.
 
 import logging
 
-from crops_growth_analysis.extraction import parcels, sentinel
-from crops_growth_analysis.processing import calculus, images
+from extraction import parcels, sentinel
+from processing import calculus, images
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -43,8 +43,8 @@ def main():
         parcel.ndvi = []
         for sentinel_data in parcel.sentinel_data:
             dataset = images.get_bands_datasets(sentinel_data)
-            ndvi_res = calculus.ndvi_and_ndmi(dataset)
-            parcel.ndvi.append(ndvi_res)
+            result = calculus.ndvi_and_ndmi(dataset)
+            parcel.ndvi.append(result)
 
 
 if __name__ == "__main__":

@@ -40,8 +40,8 @@ lint:
 	@.venv/bin/black crops_growth_analysis
 	@.venv/bin/isort crops_growth_analysis
 	@.venv/bin/pylint crops_growth_analysis
-	@.venv/bin/mypy crops_growth_analysis
 	@.venv/bin/flake8 crops_growth_analysis
+	@.venv/bin/mypy --namespace-packages=True crops_growth_analysis
 	$(info )
 
 .PHONY: clean
