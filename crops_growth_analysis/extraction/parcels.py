@@ -1,7 +1,7 @@
 """Module to import parcels from csv files (and display them on a map)"""
 
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
 import pyproj
@@ -20,7 +20,7 @@ class Parcel:
     polygon: Polygon
     wgs64_polygon: Polygon
     sentinel_data: ItemCollection = ItemCollection([])
-    ndvi: list[xarray.Dataset] = []
+    ndvi: list[xarray.Dataset] = field(default_factory=list)
 
 
 def read_csv(file_path: str) -> list[Parcel]:

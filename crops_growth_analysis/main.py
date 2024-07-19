@@ -38,11 +38,13 @@ def main():
         parcel.sentinel_data = sentinel.search_polygon(parcel.wgs64_polygon)
 
     # Get SCL image
-    logging.info("Getting SCL image")
+    logging.info("Calculating NDVI and NDMI")
     for parcel in maize_parcels:
         parcel.ndvi = []
         for sentinel_data in parcel.sentinel_data:
+            logging.info(f"Loading images for parcel {parcel.id}")
             dataset = images.get_bands_datasets(sentinel_data)
+            logging
             result = calculus.ndvi_and_ndmi(dataset)
             parcel.ndvi.append(result)
 
