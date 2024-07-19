@@ -15,6 +15,7 @@ from shapely.ops import transform
 @dataclass
 class Parcel:
     """Parcel dataclass, to be used throughout the application"""
+
     id: str
     polygon: Polygon
     wgs64_polygon: Polygon
