@@ -58,7 +58,7 @@ def upscale_using_interpolation(da: xarray.DataArray) -> xarray.DataArray:
 def upscale_using_reindex(da: xarray.DataArray) -> xarray.DataArray:
     """Double size of the array, using reindex"""
     return da.assign_coords(
-        coords={k: numpy.arange(v * 2, step=2) for k, v in da.sizes.items()}
+        coords={k: numpy.arange(0, v * 2, 2) for k, v in da.sizes.items()}
     ).reindex(
         indexers={k: numpy.arange(v * 2) for k, v in da.sizes.items()},
         method="ffill",
