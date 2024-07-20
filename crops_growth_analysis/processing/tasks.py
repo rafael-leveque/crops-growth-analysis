@@ -19,9 +19,7 @@ def get_nir(sentinel_data: Item, scl: xarray.DataArray) -> xarray.DataArray:
     return images.load_band(sentinel_data, "B08").where(scl)
 
 
-def get_ndvi(
-    sentinel_data: Item, nir: xarray.DataArray
-) -> xarray.DataArray:
+def get_ndvi(sentinel_data: Item, nir: xarray.DataArray) -> xarray.DataArray:
     """Get NDVI from Sentinel data"""
     log.info("Loading RED")
     red = images.load_band(sentinel_data, "B04")
@@ -29,9 +27,7 @@ def get_ndvi(
     return (nir - red) / (nir + red)
 
 
-def get_ndmi(
-    sentinel_data: Item, nir: xarray.DataArray
-) -> xarray.DataArray:
+def get_ndmi(sentinel_data: Item, nir: xarray.DataArray) -> xarray.DataArray:
     """Get NDMI from Sentinel data"""
     log.info("Loading SWIR")
     swir = images.load_band(sentinel_data, "B11")
