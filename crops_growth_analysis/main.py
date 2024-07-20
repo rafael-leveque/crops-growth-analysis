@@ -4,9 +4,10 @@ Main script to run the crops growth analysis.
 
 from extraction import parcels, sentinel
 from logger import log
-from processing import calculus, images
+from processing import tasks
 
 PARCEL_LIMIT = 1
+ASSETS_LIMIT = 2
 
 
 def main():
@@ -31,7 +32,9 @@ def main():
     # Search planetarium data
     log.info("Searching planetarium data")
     for parcel in maize_parcels:
-        parcel.sentinel_data = sentinel.search_polygon(parcel.wgs64_polygon)
+        parcel.sentinel_data = sentinel.search_polygon(parcel.wgs64_polygon)[
+            :ASSETS_LIMIT
+        ]
 
     # Get SCL image
     log.info("Calculating NDVI and NDMI")
@@ -39,13 +42,21 @@ def main():
         log.info(f"Processing parcel {parcel.id}")
         parcel.ndvi = []
         for sentinel_data in parcel.sentinel_data:
-            log.info("Loading images")
-            bands_da = images.get_bands(sentinel_data)
-            log.info("Formatting as dataset")
-            bands_ds = calculus.format_as_dataset(bands_da)
-            log.info("Calculating NDVI and NDMI")
-            result = calculus.ndvi_and_ndmi(bands_ds)
-            parcel.ndvi.append(result)
+            log.info("Loading SCL")
+            scl = tasks.get_scl(sentinel_data)
+            log.info("Loading NIR")
+            nir = tasks.get_nir(sentinel_data, scl)
+            del scl
+            log.info("Calculating NDVI")
+            ndvi = tasks.get_ndvi(sentinel_data, nir)
+            log.info("Calculating NDMI")
+            ndmi = tasks.get_ndmi(sentinel_data, nir)
+            del nir
+            log.info("Saving NDVI and NDMI")
+            parcel.ndvi.append(ndvi)
+            parcel.ndmi.append(ndmi)
+            del ndvi, ndmi
+    log.info("Done")
 
 
 if __name__ == "__main__":

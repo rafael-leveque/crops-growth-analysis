@@ -9,46 +9,32 @@ from pystac import Item
 
 def get_scl(sentinel_data: Item) -> xarray.DataArray:
     """Filter out clouds from SCL"""
-    log.info("Loading SCL")
     scl = images.load_band(sentinel_data, "SCL")
-    log.info("Filtering SCL")
-    scl = scl.where(scl < 7 & scl > 1)
-    log.info("Upscaling SCL")
+    scl = scl.where(scl < 7).where(scl > 1)
     return upscale_array(scl)
 
 
-def get_nir(sentinel_data: Item) -> xarray.DataArray:
-    """Get NIR band from Sentinel data"""
-    log.info("Loading NIR")
-    return images.load_band(sentinel_data, "B08")
+def get_nir(sentinel_data: Item, scl: xarray.DataArray) -> xarray.DataArray:
+    """Get NIR band from Sentinel data and filter out clouds"""
+    return images.load_band(sentinel_data, "B08").where(scl)
 
 
 def get_ndvi(
-    sentinel_data: Item, scl: xarray.DataArray, nir: xarray.DataArray
+    sentinel_data: Item, nir: xarray.DataArray
 ) -> xarray.DataArray:
     """Get NDVI from Sentinel data"""
-    log.info("Calculating NDVI")
-    log.info("Filtering NIR")
-    nir = nir.where(scl)
     log.info("Loading RED")
     red = images.load_band(sentinel_data, "B04")
-    log.info("Filtering RED")
-    red = red.where(scl)
     log.info("Calculate NDVI")
     return (nir - red) / (nir + red)
 
 
 def get_ndmi(
-    sentinel_data: Item, scl: xarray.DataArray, nir: xarray.DataArray
+    sentinel_data: Item, nir: xarray.DataArray
 ) -> xarray.DataArray:
     """Get NDMI from Sentinel data"""
-    log.info("Calculating NDMI")
-    log.info("Filtering NIR")
-    nir = nir.where(scl)
     log.info("Loading SWIR")
     swir = images.load_band(sentinel_data, "B11")
-    log.info("Filtering SWIR")
-    swir = swir.where(scl)
     log.info("Upscaling SWIR")
     swir = upscale_array(swir)
     log.info("Calculate NDMI")
@@ -77,6 +63,6 @@ def upscale_using_reindex(da: xarray.DataArray) -> xarray.DataArray:
     return da.assign_coords(
         coords={k: numpy.arange(v * 2, step=2) for k, v in da.sizes.items()}
     ).reindex(
-        coords={k: numpy.arange(v * 2) for k, v in da.sizes.items()},
+        indexers={k: numpy.arange(v * 2) for k, v in da.sizes.items()},
         method="ffill",
     )
