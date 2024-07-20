@@ -1,3 +1,5 @@
+"""Logger configuration for the package."""
+
 import logging
 
 log = logging.getLogger(__name__)
