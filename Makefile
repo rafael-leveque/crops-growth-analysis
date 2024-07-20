@@ -37,7 +37,7 @@ run:
 
 lint:
 	$(info ### Run linter ###)
-	@.venv/bin/black crops_growth_analysis
+	@.venv/bin/black --line-length=80 crops_growth_analysis
 	@.venv/bin/isort crops_growth_analysis
 	@.venv/bin/pylint crops_growth_analysis
 	@.venv/bin/flake8 crops_growth_analysis
