@@ -2,9 +2,9 @@
 Main script to run the crops growth analysis.
 """
 
-from extraction import parcels, sentinel
-from logger import log
-from processing import tasks
+from crops_growth_analysis.extraction import parcels, sentinel
+from crops_growth_analysis.logger import log
+from crops_growth_analysis.processing import tasks
 
 PARCEL_LIMIT = 1
 ASSETS_LIMIT = 2
@@ -39,7 +39,7 @@ def main():
     # Get SCL image
     log.info("Calculating NDVI and NDMI")
     for parcel in maize_parcels:
-        log.info(f"Processing parcel {parcel.id}")
+        log.info("Processing parcel %s", parcel.id)
         parcel.ndvi = []
         for sentinel_data in parcel.sentinel_data:
             log.info("Loading SCL")

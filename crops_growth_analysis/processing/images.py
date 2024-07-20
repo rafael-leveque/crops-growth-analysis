@@ -5,9 +5,10 @@ Module to load images from Sentinel-2 data
 import numpy
 import requests
 import xarray
-from logger import log
 from PIL import Image
 from pystac import Item
+
+from crops_growth_analysis.logger import log
 
 Image.MAX_IMAGE_PIXELS = None
 

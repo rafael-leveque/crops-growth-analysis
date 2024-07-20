@@ -2,9 +2,10 @@
 
 import numpy
 import xarray
-from logger import log
-from processing import images
 from pystac import Item
+
+from crops_growth_analysis.logger import log
+from crops_growth_analysis.processing import images
 
 
 def get_scl(sentinel_data: Item) -> xarray.DataArray:

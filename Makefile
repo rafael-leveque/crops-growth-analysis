@@ -30,7 +30,7 @@ install: .venv
 
 run:
 	$(info ### Run the application ###)
-	@.venv/bin/python crops_growth_analysis/main.py
+	@.venv/bin/python -m crops_growth_analysis.main
 	$(info )
 
 .PHONY: lint
