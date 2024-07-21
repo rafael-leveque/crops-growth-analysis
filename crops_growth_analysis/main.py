@@ -2,9 +2,9 @@
 Main script to run the crops growth analysis.
 """
 
-from crops_growth_analysis.extraction import parcels, sentinel
+from crops_growth_analysis.extract import parcels, sentinel
 from crops_growth_analysis.logger import log
-from crops_growth_analysis.processing import tasks
+from crops_growth_analysis.process import tasks
 
 PARCEL_LIMIT = 1
 ASSETS_LIMIT = 2
