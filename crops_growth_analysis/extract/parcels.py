@@ -20,8 +20,7 @@ class Parcel:
     polygon: Polygon
     wgs64_polygon: Polygon
     sentinel_data: ItemCollection = ItemCollection([])
-    ndvi: list[xarray.DataArray] = field(default_factory=list)
-    ndmi: list[xarray.DataArray] = field(default_factory=list)
+    bands: xarray.DataArray = field(default_factory=xarray.DataArray)
 
 
 def read_csv(file_path: str) -> list[Parcel]:

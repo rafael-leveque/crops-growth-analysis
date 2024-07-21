@@ -4,7 +4,7 @@ Main script to run the crops growth analysis.
 
 from crops_growth_analysis.extract import parcels, sentinel
 from crops_growth_analysis.logger import log
-from crops_growth_analysis.process import tasks
+from crops_growth_analysis.process import external, manual
 
 PARCEL_LIMIT = 1
 ASSETS_LIMIT = 2
@@ -40,22 +40,9 @@ def main():
     log.info("Calculating NDVI and NDMI")
     for parcel in maize_parcels:
         log.info("Processing parcel %s", parcel.id)
-        parcel.ndvi = []
-        for sentinel_data in parcel.sentinel_data:
-            log.info("Loading SCL")
-            scl = tasks.get_scl(sentinel_data)
-            log.info("Loading NIR")
-            nir = tasks.get_nir(sentinel_data, scl)
-            del scl
-            log.info("Calculating NDVI")
-            ndvi = tasks.get_ndvi(sentinel_data, nir)
-            log.info("Calculating NDMI")
-            ndmi = tasks.get_ndmi(sentinel_data, nir)
-            del nir
-            log.info("Saving NDVI and NDMI")
-            parcel.ndvi.append(ndvi)
-            parcel.ndmi.append(ndmi)
-            del ndvi, ndmi
+        parcel.bands = manual.process_parcel(parcel.sentinel_data)
+        # parcel.bands = external.process_parcel(parcel.sentinel_data)
+    log.info(maize_parcels[0].bands)
     log.info("Done")
 
 
