@@ -1,6 +1,7 @@
 """
 Main script to run the crops growth analysis.
 """
+import time
 
 from crops_growth_analysis.extract import parcels, sentinel
 from crops_growth_analysis.logger import log
@@ -14,6 +15,10 @@ def main():
     """
     Main function to run the crops growth analysis.
     """
+    # Start Timer
+    log.info("--- Start Timer ---")
+    start_time = time.time()
+
     # Read csv parcels
     log.info("--- Prepare Data ---")
 
@@ -41,9 +46,10 @@ def main():
     for parcel in maize_parcels:
         log.info("Processing parcel %s", parcel.id)
         parcel.bands = manual.process_parcel(parcel.sentinel_data)
-        # parcel.bands = external.process_parcel(parcel.sentinel_data)
-    log.info(maize_parcels[0].bands)
-    log.info("Done")
+        # parcel.bands = external.process_parcel(parcel.sentinel_data).compute()
+    log.info(maize_parcels[0].bands.isel(time=0).isel(band=0))
+    log.info("--- End Timer ---")
+    log.info("--- Execution time: %s seconds ---", time.time() - start_time)
 
 
 if __name__ == "__main__":

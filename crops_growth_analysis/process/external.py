@@ -9,6 +9,7 @@ from crops_growth_analysis.logger import log
 
 def process_parcel(items: ItemCollection) -> xarray.DataArray:
     """Process a parcel using stackstac"""
+    log.info("Loading SCL and NIR")
     bands = stackstac.stack(items, assets=["B04", "B08", "B11", "SCL"])
     log.info("Calculating NDVI")
     ndvi = (bands.sel(band="B08") - bands.sel(band="B04")) / (
@@ -18,6 +19,7 @@ def process_parcel(items: ItemCollection) -> xarray.DataArray:
     ndmi = (bands.sel(band="B08") - bands.sel(band="B11")) / (
         bands.sel(band="B08") + bands.sel(band="B11")
     )
+    log.info("Concatenating results")
     return xarray.concat([ndvi, ndmi], dim="band").assign_coords(
         coords={"band": ["ndvi", "ndmi"]}
     )

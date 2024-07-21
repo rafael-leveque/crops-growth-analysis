@@ -12,9 +12,8 @@ def process_parcel(items: ItemCollection) -> xarray.DataArray:
     """Process a parcel"""
     data_arrays: list[xarray.DataArray] = []
     for item in items:
-        log.info("Loading SCL")
+        log.info("Loading SCL and NIR")
         scl = get_scl(item)
-        log.info("Loading NIR")
         nir = get_nir(item, scl)
         del scl
         log.info("Calculating NDVI")
@@ -22,7 +21,6 @@ def process_parcel(items: ItemCollection) -> xarray.DataArray:
         log.info("Calculating NDMI")
         ndmi = get_ndmi(item, nir)
         del nir
-        log.info("Saving NDVI and NDMI")
         data_arrays.append(
             xarray.DataArray(
                 data=[ndvi, ndmi],
@@ -35,19 +33,10 @@ def process_parcel(items: ItemCollection) -> xarray.DataArray:
             )
         )
         del ndvi, ndmi
+    log.info("Concatenating results")
     return xarray.concat(data_arrays, dim="time").assign_coords(
         coords={"time": [item.datetime for item in items]}
     )
-    # return xarray.DataArray(
-    #     data_arrays,
-    #     dims=["time", "band", "y", "x"],
-    #     coords={
-    #         "time": [item.datetime for item in items],
-    #         "band": ["ndvi", "ndmi"],
-    #         "y": data_arrays[0].y,
-    #         "x": data_arrays[0].x,
-    #     },
-    # )
 
 
 def get_scl(sentinel_data: Item) -> xarray.DataArray:
