@@ -16,5 +16,5 @@ def search_polygon(polygon: Polygon) -> ItemCollection:
     return catalog.search(
         collections=["sentinel-2-l2a"],
         intersects=polygon,
-        datetime="2024",
+        datetime="2024-06-01/2024-06-30",
     ).item_collection()
