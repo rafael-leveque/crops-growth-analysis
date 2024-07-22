@@ -6,7 +6,8 @@ import time
 
 from crops_growth_analysis.extract import csv, sentinel
 from crops_growth_analysis.logger import log
-from crops_growth_analysis.process import external, manual
+from crops_growth_analysis.process import external
+# from crops_growth_analysis.process import manual
 
 PARCEL_LIMIT = -1
 ASSETS_LIMIT = -1
@@ -44,8 +45,8 @@ def main():
     log.info("Calculating NDVI and NDMI")
     for parcel in parcels:
         log.debug("Processing parcel %s", parcel.id)
-        parcel.bands = manual.process_parcel(parcel)
-        # parcel.bands = external.process_parcel(parcel).compute()
+        # parcel.bands = manual.process_parcel(parcel)
+        parcel.bands = external.process_parcel(parcel).compute()
     log.info("--- End Timer ---")
     log.info(
         "--- DataArray Size: %s kb ---",

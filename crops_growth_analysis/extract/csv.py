@@ -63,6 +63,7 @@ def read_all():
     """
     return read_maize() + read_tournesol()
 
+
 def display_parcels(title: str, parcels: list[Parcel]):
     """Plot the data on a map"""
     plt.figure()
