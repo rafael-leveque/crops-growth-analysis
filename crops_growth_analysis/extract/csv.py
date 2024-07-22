@@ -56,6 +56,13 @@ def read_tournesol():
     return read_csv("data/tournesol.csv")
 
 
+def read_all():
+    """
+    Read all parcels from csv files
+    Result is a list of parcels with an ID and a polygon
+    """
+    return read_maize() + read_tournesol()
+
 def display_parcels(title: str, parcels: list[Parcel]):
     """Plot the data on a map"""
     plt.figure()

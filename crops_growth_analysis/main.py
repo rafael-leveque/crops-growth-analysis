@@ -4,12 +4,12 @@ Main script to run the crops growth analysis.
 
 import time
 
-from crops_growth_analysis.extract import parcels, sentinel
+from crops_growth_analysis.extract import csv, sentinel
 from crops_growth_analysis.logger import log
 from crops_growth_analysis.process import external, manual
 
-PARCEL_LIMIT = 1
-ASSETS_LIMIT = 1
+PARCEL_LIMIT = -1
+ASSETS_LIMIT = -1
 
 
 def main():
@@ -25,8 +25,7 @@ def main():
         "Reading CSV %s",
         "" if PARCEL_LIMIT < 0 else f"(Limited to {PARCEL_LIMIT} parcels)",
     )
-    maize_parcels = parcels.read_maize()[:PARCEL_LIMIT]
-    # tournesol_parcels = parcels.read_tournesol()
+    parcels = (csv.read_maize() + csv.read_tournesol())[:PARCEL_LIMIT]
 
     # Display parcels
     # extraction.parcels.display_parcels("Maize", maize_parcels)
@@ -37,18 +36,21 @@ def main():
         "Searching planetarium data %s",
         "" if ASSETS_LIMIT < 0 else f"(Limited to {ASSETS_LIMIT} assets)",
     )
-    for parcel in maize_parcels:
+    for parcel in parcels:
         parcel.sentinel_items = sentinel.search_polygon(parcel.polygon)[
             :ASSETS_LIMIT
         ]
 
     log.info("Calculating NDVI and NDMI")
-    for parcel in maize_parcels:
+    for parcel in parcels:
         log.debug("Processing parcel %s", parcel.id)
         parcel.bands = manual.process_parcel(parcel)
         # parcel.bands = external.process_parcel(parcel).compute()
     log.info("--- End Timer ---")
-    log.info("--- DataArray Size: %s kb ---", round(parcel.bands.nbytes / 1024, 2))
+    log.info(
+        "--- DataArray Size: %s kb ---",
+        round(sum([parcel.bands.nbytes for parcel in parcels]) / 1024, 2),
+    )
     log.info("--- Execution time: %s seconds ---", time.time() - start_time)
 
 

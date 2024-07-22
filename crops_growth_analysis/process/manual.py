@@ -2,12 +2,12 @@
 
 import xarray
 
-from crops_growth_analysis.extract import parcels
+from crops_growth_analysis.extract import csv
 from crops_growth_analysis.logger import log
 from crops_growth_analysis.process.images import ItemImages
 
 
-def process_parcel(parcel: parcels.Parcel) -> xarray.DataArray:
+def process_parcel(parcel: csv.Parcel) -> xarray.DataArray:
     """Process a parcel"""
     data_arrays: list[xarray.DataArray] = []
     for item in parcel.sentinel_items:

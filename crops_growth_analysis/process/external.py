@@ -3,11 +3,11 @@
 import stackstac
 import xarray
 
-from crops_growth_analysis.extract import parcels
+from crops_growth_analysis.extract import csv
 from crops_growth_analysis.logger import log
 
 
-def process_parcel(parcel: parcels.Parcel) -> xarray.DataArray:
+def process_parcel(parcel: csv.Parcel) -> xarray.DataArray:
     """Process a parcel using stackstac"""
     # log.debug("Loading All Bands")
     bands = stackstac.stack(
