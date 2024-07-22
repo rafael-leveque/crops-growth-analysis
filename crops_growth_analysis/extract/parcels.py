@@ -4,12 +4,10 @@ import csv
 from dataclasses import dataclass, field
 
 import matplotlib.pyplot as plt
-import pyproj
 import shapely
 import xarray
 from pystac import ItemCollection
-from shapely.geometry import Polygon
-from shapely.ops import transform
+from shapely import Polygon
 
 
 @dataclass
@@ -18,8 +16,7 @@ class Parcel:
 
     id: str
     polygon: Polygon
-    wgs64_polygon: Polygon
-    sentinel_data: ItemCollection = ItemCollection([])
+    sentinel_items: ItemCollection = ItemCollection([])
     bands: xarray.DataArray = field(default_factory=xarray.DataArray)
 
 
@@ -37,14 +34,7 @@ def read_csv(file_path: str) -> list[Parcel]:
             parcel_id = row[0]
             geometry = shapely.from_wkt(row[7])
             if isinstance(geometry, Polygon):
-                polygon = geometry
-                wgs64_polygon = transform(
-                    pyproj.Transformer.from_crs(
-                        pyproj.CRS("EPSG:2154"), pyproj.CRS("EPSG:4326")
-                    ).transform,
-                    polygon,
-                )
-                parcels.append(Parcel(parcel_id, polygon, wgs64_polygon))
+                parcels.append(Parcel(parcel_id, geometry))
             else:
                 raise ValueError(f"{parcel_id} is not a polygon")
     return parcels

@@ -1,6 +1,7 @@
 """
 Main script to run the crops growth analysis.
 """
+
 import time
 
 from crops_growth_analysis.extract import parcels, sentinel
@@ -8,7 +9,7 @@ from crops_growth_analysis.logger import log
 from crops_growth_analysis.process import external, manual
 
 PARCEL_LIMIT = 1
-ASSETS_LIMIT = 2
+ASSETS_LIMIT = 1
 
 
 def main():
@@ -34,18 +35,16 @@ def main():
     # extraction.parcels.display_parcels("Tournesol", tournesol_parcels)
     # extraction.parcels.display_parcels("All", maize_data + tournesol_parcels)
 
-    # Search planetarium data
     log.info("Searching planetarium data")
     for parcel in maize_parcels:
-        parcel.sentinel_data = sentinel.search_polygon(parcel.wgs64_polygon)[
+        parcel.sentinel_items = sentinel.search_polygon(parcel.polygon)[
             :ASSETS_LIMIT
         ]
 
-    # Get SCL image
     log.info("Calculating NDVI and NDMI")
     for parcel in maize_parcels:
         log.info("Processing parcel %s", parcel.id)
-        parcel.bands = manual.process_parcel(parcel.sentinel_data)
+        parcel.bands = manual.process_parcel(parcel)
         # parcel.bands = external.process_parcel(parcel.sentinel_data).compute()
     log.info(maize_parcels[0].bands.isel(time=0).isel(band=0))
     log.info("--- End Timer ---")
