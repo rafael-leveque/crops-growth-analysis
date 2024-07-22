@@ -55,9 +55,4 @@ Here is a benchmark comparing the two methods:
 | stackstac | 1 | 2 | N/A | > 4 | N/A |
 | xarrays | 1 | 2 | 46s | 2.8 | 428 |
 
-Now with bounds:
-
-| Method | Parcels | Assets | Time (s) | Memory (GB) | Result |
-|--------|---------|--------|----------|-------------|--------|
-| stackstac | 1 | 1 | 20s | 3.5 | 950 |
-| xarrays | 1 | 1 | 30s | 2 | 428 |
+Now with bounds, stackstac is just waaaaay faster. Must have some stream loading connected to bounds.

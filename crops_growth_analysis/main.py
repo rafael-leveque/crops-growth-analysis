@@ -44,8 +44,8 @@ def main():
     log.info("Calculating NDVI and NDMI")
     for parcel in maize_parcels:
         log.info("Processing parcel %s", parcel.id)
-        parcel.bands = manual.process_parcel(parcel)
-        # parcel.bands = external.process_parcel(parcel.sentinel_data).compute()
+        # parcel.bands = manual.process_parcel(parcel)
+        parcel.bands = external.process_parcel(parcel).compute()
     log.info(maize_parcels[0].bands.isel(time=0).isel(band=0))
     log.info("--- End Timer ---")
     log.info("--- Execution time: %s seconds ---", time.time() - start_time)
