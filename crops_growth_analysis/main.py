@@ -8,8 +8,8 @@ from crops_growth_analysis.extract import parcels, sentinel
 from crops_growth_analysis.logger import log
 from crops_growth_analysis.process import external, manual
 
-PARCEL_LIMIT = 1
-ASSETS_LIMIT = 1
+PARCEL_LIMIT = -1
+ASSETS_LIMIT = -1
 
 
 def main():
@@ -23,7 +23,10 @@ def main():
     # Read csv parcels
     log.info("--- Prepare Data ---")
 
-    log.info("Reading CSV (Limited to %s parcels)", PARCEL_LIMIT)
+    log.info(
+        "Reading CSV %s",
+        "" if PARCEL_LIMIT > 0 else f"(Limited to {PARCEL_LIMIT})",
+    )
     maize_parcels = parcels.read_maize()[:PARCEL_LIMIT]
 
     # log.info("Reading tournesol parcels")
