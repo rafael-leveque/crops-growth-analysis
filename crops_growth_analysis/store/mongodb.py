@@ -1,6 +1,7 @@
 """Module to store parcels and their NDVI and NDMI values in MongoDB"""
 
 import pymongo
+import io
 
 from crops_growth_analysis.extract.csv import Parcel
 from crops_growth_analysis.logger import log
@@ -31,7 +32,33 @@ class ParcelStorage:
         """
         # Store parcel information
         log.debug("Storing parcel information")
-        parcel_dict = {
+        self.store_parcel_info(parcel)
+        # Store bands information
+        log.debug("Storing bands information")
+        for band_ds in parcel.bands:
+            for time_ds in band_ds:
+                current_band = time_ds["band"].item()
+                current_time = time_ds["time"].item()
+                log.debug(
+                    "Storing band %s and time %s",
+                    current_band,
+                    current_time,
+                )
+                netcdf_buffer = io.BytesIO()
+                time_ds.to_netcdf(netcdf_buffer)
+                self.store_band(
+                    parcel.id,
+                    current_band,
+                    current_time,
+                    netcdf_buffer.getvalue(),
+                )
+        log.debug("Parcel stored")
+
+    def store_parcel_info(self, parcel: Parcel):
+        """
+        Store parcel information in Mongo DB
+        """
+        document = {
             "_id": parcel.id,
             "polygon": parcel.polygon.wkt,
             "processed_datetimes": [
@@ -39,34 +66,31 @@ class ParcelStorage:
             ],
         }
         self.parcels.update_one(
-            {"_id": parcel.id}, {"$set": parcel_dict}, upsert=True
+            {"_id": parcel.id}, {"$set": document}, upsert=True
         )
-        # Store bands information
-        log.debug("Storing bands information")
-        for band in parcel.bands:
-            log.debug("Storing nvdi %s", band.datetime)
-            ndvi_dict = {
-                "parcel_id": parcel.id,
-                "datetime": band.datetime,
-                "ndvi": band.ndvi,
-            }
-            self.ndvi.replace_one(
-                {"parcel_id": parcel.id, "datetime": band.datetime},
-                ndvi_dict,
-                upsert=True,
-            )
-            log.debug("Storing ndmi %s", band.datetime)
-            ndmi_dict = {
-                "parcel_id": parcel.id,
-                "datetime": band.datetime,
-                "ndmi": band.ndmi,
-            }
-            self.ndmi.replace_one(
-                {"parcel_id": parcel.id, "datetime": band.datetime},
-                ndmi_dict,
-                upsert=True,
-            )
-        log.debug("Parcel stored")
+
+    def store_band(
+        self,
+        parcel_id: str,
+        band: str,
+        time: str,
+        data: bytes = None,
+        url: str = None,
+    ):
+        """
+        Store band information in Mongo DB
+        Either with binary data or with a URL
+        """
+        document = {
+            "parcel_id": parcel_id,
+            "datetime": time,
+        }
+        collection = self.ndvi if band == "ndvi" else self.ndmi
+        collection.replace_one(
+            document,
+            {**document, "data": data, "url": url},
+            upsert=True,
+        )
 
     def close(self):
         """

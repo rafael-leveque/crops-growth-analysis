@@ -7,10 +7,11 @@ import time
 from crops_growth_analysis.extract import csv, sentinel
 from crops_growth_analysis.logger import log
 from crops_growth_analysis.process import external
+
 # from crops_growth_analysis.process import manual
 
-PARCEL_LIMIT = -1
-ASSETS_LIMIT = -1
+PARCEL_LIMIT = 1
+ASSETS_LIMIT = 5
 
 
 def main():
@@ -47,6 +48,16 @@ def main():
         log.debug("Processing parcel %s", parcel.id)
         # parcel.bands = manual.process_parcel(parcel)
         parcel.bands = external.process_parcel(parcel).compute()
+
+    for parcel in parcels:
+        log.info("Storing parcel %s", parcel.id)
+        for band in parcel.bands:
+            log.info("Storing band %s", band["band"].item())
+            for datetime in band:
+                log.info("Storing time %s", datetime["time"].item())
+            exit(0)
+        # storage.minio.store_parcel(parcel)
+        # storage.mongodb.store_parcel(parcel)
     log.info("--- End Timer ---")
     log.info(
         "--- DataArray Size: %s kb ---",

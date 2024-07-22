@@ -1,5 +1,7 @@
 """Module to store parcels and their NDVI and NDMI values in PostgreSQL"""
 
+import io
+
 import psycopg2
 
 from crops_growth_analysis.extract.csv import Parcel
@@ -43,7 +45,8 @@ class ParcelStorage:
             CREATE TABLE IF NOT EXISTS ndvi (
                 parcel_id TEXT,
                 datetime TIMESTAMP,
-                ndvi DOUBLE PRECISION,
+                data BYTEA,
+                url TEXT,
                 PRIMARY KEY (parcel_id, datetime)
             )
             """
@@ -53,7 +56,8 @@ class ParcelStorage:
             CREATE TABLE IF NOT EXISTS ndmi (
                 parcel_id TEXT,
                 datetime TIMESTAMP,
-                ndmi DOUBLE PRECISION,
+                data BYTEA,
+                url TEXT,
                 PRIMARY KEY (parcel_id, datetime)
             )
             """
@@ -65,7 +69,31 @@ class ParcelStorage:
         """
         # Store parcel information
         log.debug("Storing parcel information")
-        parcel_dict = {
+        self.store_parcel_info(parcel)
+
+        # Store bands information
+        log.debug("Storing bands information")
+        for band_ds in parcel.bands:
+            for time_ds in band_ds:
+                current_band = time_ds["band"].item()
+                current_time = time_ds["time"].item()
+                log.debug(
+                    "Storing band %s and time %s", current_band, current_time
+                )
+                netcdf_buffer = io.BytesIO()
+                time_ds.to_netcdf(netcdf_buffer)
+                self.store_band(
+                    parcel.id,
+                    current_band,
+                    current_time,
+                    netcdf_buffer.getvalue(),
+                )
+
+    def store_parcel_info(self, parcel: Parcel):
+        """
+        Store parcel information in PostgreSQL
+        """
+        document = {
             "id": parcel.id,
             "polygon": parcel.polygon.wkt,
             "processed_datetimes": [
@@ -80,42 +108,37 @@ class ParcelStorage:
             SET polygon = excluded.polygon,
                 processed_datetimes = excluded.processed_datetimes
             """,
-            parcel_dict,
+            document,
         )
 
-        # Store bands information
-        log.debug("Storing bands information")
-        for band in parcel.bands:
-            log.debug("Storing nvdi %s", band.datetime)
-            ndvi_dict = {
-                "parcel_id": parcel.id,
-                "datetime": band.datetime,
-                "ndvi": band.ndvi,
-            }
-            self.cursor.execute(
-                """
-                INSERT INTO ndvi (parcel_id, datetime, ndvi)
-                VALUES (%(parcel_id)s, %(datetime)s, %(ndvi)s)
-                ON CONFLICT (parcel_id, datetime) DO UPDATE
-                SET ndvi = excluded.ndvi
-                """,
-                ndvi_dict,
-            )
-            log.debug("Storing ndmi %s", band.datetime)
-            ndmi_dict = {
-                "parcel_id": parcel.id,
-                "datetime": band.datetime,
-                "ndmi": band.ndmi,
-            }
-            self.cursor.execute(
-                """
-                INSERT INTO ndmi (parcel_id, datetime, ndmi)
-                VALUES (%(parcel_id)s, %(datetime)s, %(ndmi)s)
-                ON CONFLICT (parcel_id, datetime) DO UPDATE
-                SET ndmi = excluded.ndmi
-                """,
-                ndmi_dict,
-            )
+    def store_band(
+        self,
+        parcel_id: str,
+        band: str,
+        time: str,
+        data: bytes = None,
+        url: str = None,
+    ):
+        """
+        Store band information in PostgreSQL
+        Either with binary data or with a URL
+        """
+        document = {
+            "parcel_id": parcel_id,
+            "band": band,
+            "datetime": time,
+            "data": data,
+            "url": url,
+        }
+        self.cursor.execute(
+            """
+            INSERT INTO %(band)s (parcel_id, datetime, data, url)
+            VALUES (%(parcel_id)s, %(datetime)s, %(data)s, %(url)s)
+            ON CONFLICT (parcel_id, datetime) DO UPDATE
+            SET value = excluded.value
+            """,
+            document,
+        )
 
     def close(self):
         """
