@@ -11,6 +11,7 @@ from crops_growth_analysis.process import external
 # from crops_growth_analysis.store import minio
 # from crops_growth_analysis.store import mongodb
 from crops_growth_analysis.store import postgresql
+from crops_growth_analysis.display import basic
 
 PARCEL_LIMIT = -1
 ASSETS_LIMIT = -1
@@ -81,11 +82,22 @@ def main():
     store_time = time.time() - start_time
     log.info("--- Store Time : %s ---", store_time)
 
+    log.info("--- Start Display ---")
+    start_time = time.time()
+
+    log.info("Displaying parcels")
+    first_parcel = parcels[0]
+    basic.plot_parcel(first_parcel, first_parcel.sentinel_items[0].datetime)
+
+    display_time = time.time() - start_time
+    log.info("--- Display Time : %s ---", display_time)
+
     overall_time = time.time() - overall_start_time
     log.info("--- Summary ---")
     log.info("--- Extract Time : %s ---", extract_time)
     log.info("--- Process Time : %s ---", process_time)
     log.info("--- Store Time : %s ---", store_time)
+    log.info("--- Display Time : %s ---", display_time)
     log.info("--- Overall Time : %s ---", overall_time)
 
 
