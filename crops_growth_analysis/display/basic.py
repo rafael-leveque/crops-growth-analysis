@@ -10,7 +10,15 @@ import xarray
 from crops_growth_analysis.extract.csv import Parcel
 
 
-def plot_parcel(parcel: Parcel, time: datetime.datetime):
+def display_parcels(parcels: list[Parcel]):
+    """
+    Display parcels with visual and ndvi
+    For now, we just display the first time of first parcel
+    """
+    display_parcel(parcels[0], parcels[0].bands.time[0])
+
+
+def display_parcel(parcel: Parcel, time: datetime.datetime):
     """
     Plot parcel with visual and ndvi
     Ideally we would read from databases.
