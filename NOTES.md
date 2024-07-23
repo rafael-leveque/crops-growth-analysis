@@ -30,11 +30,13 @@ Next step may be to use dask to parallelize the process (stackstac is already us
 
 ## Database choice
 
-Three kind of storage are possible:
+Three main solutions are available for storing data:
 
-- PostgreSQL : popular sql database. Useful for complex queries and sql requests.
-- MongoDB : popular nosql database. Useful for storing json data and scaling.
-- Minio + Backend : popular object storage. Useful for storing large files and keep light data in a database.
+- SQL Database : Useful for complex queries and sql requests. (Example: Postgresql, CloudSQL, BigQuery, etc.)
+- NoSQL Document Database : Useful for storing json data and scaling. (Example: MongoDB, Firestore, etc.)
+- Object Storage : Useful for storing large files and keep light data in a database. (Example: Minio, Cloud Storage, S3, etc.)
+
+The choice will depend on the needs. A project may use multiple databases to store different types of data for different purposes.
 
 ## Visualization
 
@@ -47,3 +49,5 @@ Going outside of python, we can use the following libraries:
 
 - Kepler.gl : popular library for geospatial data. Useful for visualizing large datasets.
 - Carto : popular library for geospatial data. Useful for visualizing large datasets. But expensive.
+
+Chosing the right library goes with choosing the right database.

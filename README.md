@@ -8,6 +8,10 @@ This projects aims to extract NDVI and NDWI values from satellite images and ana
 - Process : loading images and calculating the NDVI and NDWI.
 - Store : storing the NDVI and NDWI values in a database.
 
+Development instructions are available in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+Some notes about development are available in the [NOTES.md](NOTES.md) file.
+
 ## Pre-requisites
 
 Install pyenv using the following command:
