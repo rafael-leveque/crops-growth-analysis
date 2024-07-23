@@ -30,6 +30,17 @@ pyenv install 3.12.4
 python --version
 ```
 
+If you want to start databases locally, you can use docker. Install docker using the following command:
+
+```bash
+sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
 ## Start Database
 
 Three database may be useful for this project : postgresql, mongodb and minio. To start them, you can use the makefile:
