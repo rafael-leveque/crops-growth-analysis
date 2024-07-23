@@ -1,14 +1,13 @@
 """Module to store parcels and their NDVI and NDMI values in PostgreSQL"""
 
-import io
-
 import psycopg2
 
 from crops_growth_analysis.extract.csv import Parcel
 from crops_growth_analysis.logger import log
+from crops_growth_analysis.store.common import AbstractParcelStorage
 
 
-class ParcelStorage:
+class ParcelStorage(AbstractParcelStorage):
     """
     Parcel storage class
     Init client and create tables
@@ -62,32 +61,6 @@ class ParcelStorage:
             )
             """
         )
-
-    def store_parcel(self, parcel: Parcel):
-        """
-        Store the parcel in PostgreSQL
-        """
-        # Store parcel information
-        log.debug("Storing parcel information")
-        self.store_parcel_info(parcel)
-
-        # Store bands information
-        log.debug("Storing bands information")
-        for band_ds in parcel.bands:
-            for time_ds in band_ds:
-                current_band = time_ds["band"].item()
-                current_time = time_ds["time"].item()
-                log.debug(
-                    "Storing band %s and time %s", current_band, current_time
-                )
-                netcdf_buffer = io.BytesIO()
-                time_ds.to_netcdf(netcdf_buffer)
-                self.store_band(
-                    parcel.id,
-                    current_band,
-                    current_time,
-                    netcdf_buffer.getvalue(),
-                )
 
     def store_parcel_info(self, parcel: Parcel):
         """

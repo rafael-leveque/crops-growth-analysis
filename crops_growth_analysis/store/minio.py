@@ -3,17 +3,16 @@ Module to store parcels and their NDVI and NDMI values in Minio
 backed by Postgresql or MongoDB metadata
 """
 
-import io
-
 import minio
 
 import crops_growth_analysis.store.mongodb as mongodb
 import crops_growth_analysis.store.postgresql as postgresql
 from crops_growth_analysis.extract.csv import Parcel
 from crops_growth_analysis.logger import log
+from crops_growth_analysis.store.common import AbstractParcelStorage
 
 
-class ParcelStorage:
+class ParcelStorage(AbstractParcelStorage):
     """
     Parcel storage class
     Init client and create tables
@@ -48,34 +47,6 @@ class ParcelStorage:
         if not self.minio_client.bucket_exists("ndmi"):
             self.minio_client.make_bucket("ndmi")
 
-    def store_parcel(self, parcel: Parcel):
-        """
-        Store the parcel in minio and metadata in backend
-        """
-        # Store parcel information
-        log.debug("Storing parcel information")
-        self.store_parcel_info(parcel)
-        # Store bands information
-        log.debug("Storing bands information")
-        for band_ds in parcel.bands:
-            for time_ds in band_ds:
-                current_band = time_ds["band"].item()
-                current_time = time_ds["time"].item()
-                log.debug(
-                    "Storing band %s and time %s",
-                    current_band,
-                    current_time,
-                )
-                netcdf_buffer = io.BytesIO()
-                time_ds.to_netcdf(netcdf_buffer)
-                self.store_band(
-                    parcel.id,
-                    current_band,
-                    current_time,
-                    netcdf_buffer.getvalue(),
-                )
-        log.debug("Parcel stored")
-
     def store_parcel_info(self, parcel: Parcel):
         """
         Store parcel information in backend
@@ -99,3 +70,9 @@ class ParcelStorage:
         )
         object_url = f"{self.base_url}/{band}/{object_name}"
         self.backend.store_band(parcel_id, band, time, url=object_url)
+
+    def close(self):
+        """
+        Close the backend
+        """
+        self.backend.close()
