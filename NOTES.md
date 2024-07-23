@@ -2,9 +2,9 @@
 
 ## Performance Review
 
-To process results, we can either use an external library (stackstac) or use xarrays. The first option is easier to use, but the second option is more flexible  (and has some serious memory economy).
+To process results, we can either use an external library (stackstac) or use xarrays. The first option is easier to use, but the second option is more flexible (and has some serious memory benefits when loading a lot of data).
 
-Here is a benchmark comparing the two methods:
+Here is a quick benchmark comparing the two methods:
 
 | Method    | Parcels | Assets | Time (s) | Memory (GB) | Result (MB) |
 | --------- | ------- | ------ | -------- | ----------- | ----------- |
@@ -35,3 +35,15 @@ Three kind of storage are possible:
 - PostgreSQL : popular sql database. Useful for complex queries and sql requests.
 - MongoDB : popular nosql database. Useful for storing json data and scaling.
 - Minio + Backend : popular object storage. Useful for storing large files and keep light data in a database.
+
+## Visualization
+
+We can use the following libraries to visualize the data:
+
+- Matplotlib : popular library for static plots. A bit basic but reliable for testing.
+- Plotly : popular library for interactive plots. A bit less basic and more interactive.
+
+Going outside of python, we can use the following libraries:
+
+- Kepler.gl : popular library for geospatial data. Useful for visualizing large datasets.
+- Carto : popular library for geospatial data. Useful for visualizing large datasets. But expensive.
