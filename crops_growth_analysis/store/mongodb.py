@@ -21,7 +21,7 @@ class ParcelStorage:
         # Connect to MongoDB
         log.debug("Connecting to MongoDB")
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
-        self.db = self.client["crops_growth_analysis"]
+        self.db = self.client["mongo-netcarbon"]
         self.parcels = self.db["parcels"]
         self.ndvi = self.db["ndvi"]
         self.ndmi = self.db["ndmi"]

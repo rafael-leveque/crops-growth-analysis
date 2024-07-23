@@ -22,9 +22,9 @@ class ParcelStorage:
         # Connect to PostgreSQL
         log.debug("Connecting to PostgreSQL")
         self.conn = psycopg2.connect(
-            dbname="crops_growth_analysis",
-            user="crops_growth_analysis",
-            password="crops_growth_analysis",
+            dbname="postgres-netcarbon",
+            user="postgres",
+            password="netcarbon",
             host="localhost",
         )
         self.cursor = self.conn.cursor()

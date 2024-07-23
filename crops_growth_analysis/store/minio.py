@@ -36,7 +36,7 @@ class ParcelStorage:
         self.minio_client = minio.Minio(
             url,
             access_key="minio",
-            secret_key="minio123",
+            secret_key="netcarbon",
             secure=secure,
         )
         scheme = "https" if secure else "http"
