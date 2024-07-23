@@ -20,7 +20,12 @@ class ParcelStorage:
     Provides methods to store parcels and bands
     """
 
-    def __init__(self, metadata_backend: str = "mongodb", url: str = "localhost:9000", secure: bool = False):
+    def __init__(
+        self,
+        metadata_backend: str = "mongodb",
+        url: str = "localhost:9000",
+        secure: bool = False,
+    ):
         """Init clients and create buckets"""
         self.backend = (
             postgresql.ParcelStorage()
@@ -34,7 +39,8 @@ class ParcelStorage:
             secret_key="minio123",
             secure=secure,
         )
-        self.base_url = f"http{"s" if self.client.use_ssl else ""}://{url}"
+        scheme = "https" if secure else "http"
+        self.base_url = f"{scheme}://{url}"
         log.debug("Get Minio NDVI Bucket")
         if not self.minio_client.bucket_exists("ndvi"):
             self.minio_client.make_bucket("ndvi")
