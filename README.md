@@ -4,9 +4,9 @@
 
 This projects aims to extract NDVI and NDWI values from satellite images and analyze the growth of crops in a given region. The project is divided into three parts: data extraction, data processing and data display. 
 
-- The data extraction part is responsible for downloading the satellite images from the Microsoft Planetarium API, filtering meaningful informations. 
-- The data processing part is responsible for calculating the NDVI and NDWI values from the images. 
-- The data display part is responsible for displaying the NDVI and NDWI values in a graph.
+- Extract : reading csv and loading sentinel-2 items.
+- Process : loading images and calculating the NDVI and NDWI.
+- Store : storing the NDVI and NDWI values in a database.
 
 ## Pre-requisites
 
@@ -14,58 +14,42 @@ Install pyenv using the following command:
 
 ```bash
 curl https://pyenv.run | bash
+echo 'export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
 ```
 
-Add the following lines to your `.bashrc` or `.zshrc` file:
+Restart your terminal and install python:
 
 ```bash
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-```
-
-Restart your terminal and check if pyenv was installed correctly using the following command:
-
-```bash
+# Check if pyenv was installed correctly
 pyenv --version
-```
-
-Install Python 3.12.4 using the following command:
-
-```bash
+# Install python
 pyenv install 3.12.4
-```
-
-Check if Python was installed correctly using the following command:
-
-```bash
+# Check if python was installed correctly
 python --version
 ```
 
-# Benchmark
+## Start Database
 
-To process results, we can either use an external library (stackstac) or use xarrays. The first option is easier to use, but the second option is more flexible  (and has some serious memory economy).
+Three database may be useful for this project : postgresql, mongodb and minio. To start them, you can use the makefile:
 
-Here is a benchmark comparing the two methods:
+```bash
+make start-postgres
+make start-mongo
+make start-minio
+```
 
-| Method    | Parcels | Assets | Time (s) | Memory (GB) | Result (MB) |
-| --------- | ------- | ------ | -------- | ----------- | ----------- |
-| stackstac | 1       | 1      | 20s      | 2.8         | 950         |
-| xarrays   | 1       | 1      | 30s      | 1.6         | 428         |
-| stackstac | 1       | 2      | N/A      | > 4         | N/A         |
-| xarrays   | 1       | 2      | 46s      | 2.8         | 428         |
+This will start the databases locally. You can access them using the following urls:
 
-Now with bounds, Memory is not an issue at all :
+- Postgres : `postgresql://postgres:postgres@localhost:5432/postgres`
+- Mongo : `mongodb://localhost:27017/`
+- Minio : `http://localhost:9000`
 
-| Method    | Parcels | Assets | Time (s) | Memory (GB) | Result (KB) |
-| --------- | ------- | ------ | -------- | ----------- | ----------- |
-| stackstac | 1       | 1      | 1.20     | -           | 5.6         |
-| xarrays   | 1       | 1      | 1.60     | -           | 2.4         |
-| stackstac | 1       | all    | 2.16     | -           | 27.9        |
-| xarrays   | 1       | all    | 6.56     | -           | 11.9        |
-| stackstac | all     | 1      | 40.77    | -           | 1.1         |
-| xarrays   | all     | 1      | 67.22    | -           | 538.6       |
-| stackstac | all     | all    | 199      | -           | 11Mb        |
-| xarrays   | all     | all    | 677      | -           | 6.5Mb       |
+## Run
 
-Next step may be to use dask to parallelize the process (stackstac is already using it, maybe that explains the time difference).
+To run the project, you can use the makefile : 
+
+```bash
+make install run
+```
