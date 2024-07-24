@@ -37,28 +37,28 @@ def main():
     log.info("--- Start Extract ---")
     start_time = time.time()
     parcels = extract()
-    extract_time = time.time() - start_time
+    extract_time = "{:.2f}".format(time.time() - start_time)
     log.info("--- Extract Time : %s ---", extract_time)
 
     log.info("--- Start Process ---")
     start_time = time.time()
     parcels = process(parcels)
-    process_time = time.time() - start_time
+    process_time = "{:.2f}".format(time.time() - start_time)
     log.info("--- Process Time : %s ---", process_time)
 
     log.info("--- Start Store ---")
     start_time = time.time()
     store(parcels)
-    store_time = time.time() - start_time
+    store_time = "{:.2f}".format(time.time() - start_time)
     log.info("--- Store Time : %s ---", store_time)
 
     log.info("--- Start Display ---")
     start_time = time.time()
     display(parcels)
-    display_time = time.time() - start_time
+    display_time = "{:.2f}".format(time.time() - start_time)
     log.info("--- Display Time : %s ---", display_time)
 
-    overall_time = time.time() - overall_start_time
+    overall_time = "{:.2f}".format(time.time() - overall_start_time)
     log.info("--- Summary ---")
     log.info("--- Extract Time : %s ---", extract_time)
     log.info("--- Process Time : %s ---", process_time)
