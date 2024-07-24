@@ -34,11 +34,10 @@ Currently, when watching the first parcel, two things are noticeable:
 
 - Definition is really bad. Now, It's possible to use interpolation to get a better definition.
   Question is, should we interpolate and store interpolated data, or keep it as is and interpolate when needed?
-- The polygon seems to be a bit off, even though the shape looks familiar.
-  May be intersting to investigate, some coordinates may have been badly converted.
 
 The ndvi data on the other hand seems to be correct. It matches what may be interpreted from the actual image.
-A good improvement would be to ignore (i.e. set to NaN) the data that is not in the polygon.
+
+Some parcels will combine two stac items. This is not handled for now but it would be graeat to display both on the same plot.
 
 ## Database choice
 
@@ -49,6 +48,8 @@ Three main solutions are available for storing data:
 - Object Storage : Useful for storing large files and keep light data in a database. (Example: Minio, Cloud Storage, S3, etc.)
 
 The choice will depend on the needs. A project may use multiple databases to store different types of data for different purposes.
+
+Some parcels will combine two stac items. This is not handled for now but data structure will have to be updated accordingly.
 
 ## Visualization
 
