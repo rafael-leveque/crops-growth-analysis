@@ -22,46 +22,34 @@ class ItemImages:
 
     def __init__(self, item: Item, parcel: Polygon):
         self.item: Item = item
-        self.parcel: Polygon = self.get_proj_polygon(parcel)
+        self.parcel: Polygon = parcel
 
-    def get_proj_polygon(self, parcel: Polygon) -> Polygon:
-        """Take coordinates bounds and turn it into xy bounds"""
-        # Put the bounds (EPSG:2154) in the item coordinate system
-        log.debug("Getting bounds")
-        item_epsg = f"EPSG:{self.item.properties['proj:epsg']}"
-        return shapely.ops.transform(
-            Transformer.from_crs(
-                CRS("EPSG:2154"), CRS(item_epsg), always_xy=True
-            ).transform,
-            parcel,
-        )
-
-    def load(self, band: str) -> xarray.DataArray:
-        """Get image from sentinel data"""
+    def load(
+        self,
+        band: str,
+        interp_like: xarray.DataArray = None,
+        mask: bool = False,
+    ) -> xarray.DataArray:
+        """
+        Get image from sentinel data
+        If interp_like is provided, the image will be interpolated to match the
+        resolution of interp_like
+        If mask is True, the image will be masked with the parcel polygon
+        """
         url = self.item.assets[band].href
         log.debug("Loading and Reading image")
         src: rasterio.DatasetReader
         with rasterio.open(url) as src:
             # log.debug("Reading image")
+            proj_parcel = self.project_polygon(self.parcel)
             window = (
-                src.window(*self.parcel.bounds).round_lengths().round_offsets()
+                src.window(*proj_parcel.bounds).round_lengths().round_offsets()
             )
-            image_array = src.read(
-                1,
-                window=window,
-                out_shape=(
-                    int(window.height * src.res[0] / 10),
-                    int(window.width * src.res[1] / 10),
-                ),
-            )
-            bounds = src.window_bounds(window)
+            image_array = src.read(1, window=window)
+            bounds = self.project_bounds(src.window_bounds(window))
             new_coords = {
-                "x": numpy.arange(
-                    bounds[0], bounds[0] + 10 * image_array.shape[1], 10
-                ),
-                "y": numpy.arange(
-                    bounds[3], bounds[3] - 10 * image_array.shape[0], -10
-                ),
+                "y": numpy.linspace(bounds[3], bounds[1], window.height),
+                "x": numpy.linspace(bounds[0], bounds[2], window.width),
             }
             data_array = xarray.DataArray(
                 image_array,
@@ -69,8 +57,35 @@ class ItemImages:
                 coords=new_coords,
                 name=band,
             )
-            data_array = self.mask(data_array)
+            if interp_like is not None:
+                data_array = data_array.interp_like(
+                    interp_like, method="nearest"
+                )
+            if mask:
+                data_array = self.mask(data_array)
         return data_array
+
+    def project_polygon(self, parcel: Polygon) -> Polygon:
+        """Project parcel to image CRS"""
+        return shapely.ops.transform(
+            Transformer.from_crs(
+                CRS("EPSG:2154"),
+                CRS(f"EPSG:{self.item.properties['proj:epsg']}"),
+                always_xy=True,
+            ).transform,
+            parcel,
+        )
+
+    def project_bounds(
+        self, bounds: tuple[float, float, float, float]
+    ) -> tuple[float, float, float, float]:
+        """Project image CRS bounds to parcel CRS"""
+        transformer = Transformer.from_crs(
+            CRS(f"EPSG:{self.item.properties['proj:epsg']}"),
+            CRS("EPSG:2154"),
+            always_xy=True,
+        )
+        return transformer.transform_bounds(*bounds)
 
     def mask(self, bands: xarray.DataArray) -> xarray.DataArray:
         """Mask bands with parcel"""
