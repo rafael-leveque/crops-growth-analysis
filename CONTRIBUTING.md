@@ -9,6 +9,7 @@ The project is divided into three parts:
 ├── crops_growth_analysis
 │   ├── extract
 │   ├── process
+|   ├── display
 │   └── store
 └── data
 ````
@@ -16,6 +17,7 @@ The project is divided into three parts:
 - The `extract` part is responsible for reading csv and loading sentinel-2 items.
 - The `process` part is responsible for loading images and calculating the NDVI and NDWI.
 - The `store` part is responsible for storing the NDVI and NDWI values in a database.
+- The `display` part is responsible for displaying the NDVI and NDWI values.
 
 
 ## Lint

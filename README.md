@@ -7,6 +7,7 @@ This projects aims to extract NDVI and NDWI values from satellite images and ana
 - Extract : reading csv and loading sentinel-2 items.
 - Process : loading images and calculating the NDVI and NDWI.
 - Store : storing the NDVI and NDWI values in a database.
+- Display : displaying the NDVI and NDWI values on a map.
 
 Development instructions are available in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
