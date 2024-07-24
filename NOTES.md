@@ -38,6 +38,7 @@ Currently, when watching the first parcel, two things are noticeable:
   May be intersting to investigate, some coordinates may have been badly converted.
 
 The ndvi data on the other hand seems to be correct. It matches what may be interpreted from the actual image.
+A good improvement would be to ignore (i.e. set to NaN) the data that is not in the polygon.
 
 ## Database choice
 

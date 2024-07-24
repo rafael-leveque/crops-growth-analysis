@@ -12,8 +12,8 @@ from crops_growth_analysis.store import common, minio, mongodb, postgresql
 
 # Set the limits for parcels and assets.
 # Set to -1 to disable limits.
-PARCEL_LIMIT = -1
-ASSETS_LIMIT = -1
+PARCEL_LIMIT = 5
+ASSETS_LIMIT = 5
 
 # Set the processing method to use.
 # One of "manual" or "external"

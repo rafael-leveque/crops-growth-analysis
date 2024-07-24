@@ -6,8 +6,15 @@ import matplotlib.pyplot as plt
 import numpy
 import stackstac
 import xarray
+from matplotlib.axes import Axes
 
 from crops_growth_analysis.extract.csv import Parcel
+
+# Limit the number of parcels
+PARCEL_LIMIT = 3
+
+# Limit the number of time to display
+TIME_LIMIT = 5
 
 
 def display_parcels(parcels: list[Parcel]):
@@ -15,19 +22,38 @@ def display_parcels(parcels: list[Parcel]):
     Display parcels
     For now, we just display the first parcel
     """
-    display_parcel(parcels[0])
+    # Process limits
+    parcel_nb = min(PARCEL_LIMIT, len(parcels))
+    time_nb = min(TIME_LIMIT, len(parcels[0].sentinel_items))
+
+    # Init plot
+    _, ax = plt.subplots(
+        parcel_nb, time_nb, sharex="row", sharey="row", squeeze=False
+    )
+
+    # Display parcels
+    for i in range(parcel_nb):
+        display_parcel(parcels[i], ax[i, :])
+
+    plt.show()
 
 
-def display_parcel(parcel: Parcel):
+def display_parcel(parcel: Parcel, ax: list[Axes]):
     """
     Display parcel timeseries
     For now, we just display the first time
     """
-    # Get first time coordintae of datarray
-    display_parcel_at_time(parcel, parcel.sentinel_items[0].datetime)
+    # Process limits
+    time_nb = min(TIME_LIMIT, len(parcel.sentinel_items))
+
+    # Display timeseries
+    for i in range(time_nb):
+        display_parcel_at_time(
+            parcel, parcel.sentinel_items[i].datetime, ax[i]
+        )
 
 
-def display_parcel_at_time(parcel: Parcel, time: datetime.datetime):
+def display_parcel_at_time(parcel: Parcel, time: datetime.datetime, ax: Axes):
     """
     Display parcel indexes at provided time.
     For now, we just display NDVI.
@@ -53,13 +79,9 @@ def display_parcel_at_time(parcel: Parcel, time: datetime.datetime):
     x, y = parcel.polygon.exterior.xy
 
     # Plot
-    _, ax = plt.subplots()
-
     ax.imshow(visual, interpolation="none", extent=extent)
     ax.imshow(ndvi_color_overlay, interpolation="none", extent=extent)
     ax.plot(x, y, color="blue", linewidth=2)
-
-    plt.show()
 
 
 def get_visual(parcel: Parcel, time: datetime.datetime) -> numpy.array:
