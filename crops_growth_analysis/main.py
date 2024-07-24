@@ -12,8 +12,8 @@ from crops_growth_analysis.store import common, minio, mongodb, postgresql
 
 # Set the limits for parcels and assets.
 # Set to -1 to disable limits.
-PARCEL_LIMIT = 1
-ASSETS_LIMIT = 1
+PARCEL_LIMIT = -1
+ASSETS_LIMIT = -1
 
 # Set the processing method to use.
 # One of "manual" or "external"
@@ -46,22 +46,15 @@ def main():
     process_time = time.time() - start_time
     log.info("--- Process Time : %s ---", process_time)
 
-    if DATABASE:
-        log.info("--- Start Store ---")
-        start_time = time.time()
-        store(parcels)
-        store_time = time.time() - start_time
-        log.info("--- Store Time : %s ---", store_time)
-    else:
-        log.warning("No database selected. Skipping storage.")
+    log.info("--- Start Store ---")
+    start_time = time.time()
+    store(parcels)
+    store_time = time.time() - start_time
+    log.info("--- Store Time : %s ---", store_time)
 
     log.info("--- Start Display ---")
     start_time = time.time()
-
-    log.info("Displaying parcels")
-    first_parcel = parcels[0]
-    basic.display_parcel(first_parcel, first_parcel.sentinel_items[0].datetime)
-
+    display(parcels)
     display_time = time.time() - start_time
     log.info("--- Display Time : %s ---", display_time)
 
@@ -124,15 +117,15 @@ def store(parcels: list[csv.Parcel]):
     elif DATABASE == "mongodb":
         storage = mongodb.ParcelStorage()
     else:
-        storage = None
+        log.warning("No database selected. Skipping storage.")
+        return
 
-    if storage:
-        log.info("Storing parcels")
-        for parcel in parcels:
-            log.debug("Storing parcel %s", parcel.id)
-            storage.store_parcel(parcel)
-        log.info("Closing DB connection")
-        storage.close()
+    log.info("Storing parcels")
+    for parcel in parcels:
+        log.debug("Storing parcel %s", parcel.id)
+        storage.store_parcel(parcel)
+    log.info("Closing DB connection")
+    storage.close()
 
 
 def display(parcels: list[csv.Parcel]):

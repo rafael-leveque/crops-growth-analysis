@@ -12,15 +12,25 @@ from crops_growth_analysis.extract.csv import Parcel
 
 def display_parcels(parcels: list[Parcel]):
     """
-    Display parcels with visual and ndvi
-    For now, we just display the first time of first parcel
+    Display parcels
+    For now, we just display the first parcel
     """
-    display_parcel(parcels[0], parcels[0].timeseries.time[0])
+    display_parcel(parcels[0])
 
 
-def display_parcel(parcel: Parcel, time: datetime.datetime):
+def display_parcel(parcel: Parcel):
     """
-    Plot parcel with visual and ndvi
+    Display parcel timeseries
+    For now, we just display the first time
+    """
+    # Get first time coordintae of datarray
+    display_parcel_at_time(parcel, parcel.sentinel_items[0].datetime)
+
+
+def display_parcel_at_time(parcel: Parcel, time: datetime.datetime):
+    """
+    Display parcel indexes at provided time.
+    For now, we just display NDVI.
     Ideally we would read from databases.
     For now, we just take the previously computed values.
     """
