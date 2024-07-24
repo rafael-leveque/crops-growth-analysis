@@ -17,7 +17,7 @@ class Parcel:
     id: str
     polygon: Polygon
     sentinel_items: ItemCollection = ItemCollection([])
-    bands: xarray.DataArray = field(default_factory=xarray.DataArray)
+    timeseries: xarray.DataArray = field(default_factory=xarray.DataArray)
 
 
 def read_csv(file_path: str) -> list[Parcel]:

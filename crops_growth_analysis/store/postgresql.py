@@ -1,5 +1,7 @@
 """Module to store parcels and their NDVI and NDMI values in PostgreSQL"""
 
+from datetime import datetime
+
 import psycopg2
 
 from crops_growth_analysis.extract.csv import Parcel
@@ -11,7 +13,7 @@ class ParcelStorage(AbstractParcelStorage):
     """
     Parcel storage class
     Init client and create tables
-    Provides methods to store parcels and bands
+    Provides methods to store parcels and timeseries
     """
 
     def __init__(self):
@@ -69,14 +71,12 @@ class ParcelStorage(AbstractParcelStorage):
         document = {
             "id": parcel.id,
             "polygon": parcel.polygon.wkt,
-            "processed_datetimes": [
-                item.datetime for item in parcel.sentinel_items
-            ],
+            "datetimes": [item.datetime for item in parcel.sentinel_items],
         }
         self.cursor.execute(
             """
             INSERT INTO parcels (id, polygon, processed_datetimes)
-            VALUES (%(id)s, ST_GeomFromText(%(polygon)s), %(processed_datetimes)s)
+            VALUES (%(id)s, ST_GeomFromText(%(polygon)s), %(datetimes)s)
             ON CONFLICT (id) DO UPDATE
             SET polygon = excluded.polygon,
                 processed_datetimes = excluded.processed_datetimes
@@ -84,28 +84,28 @@ class ParcelStorage(AbstractParcelStorage):
             document,
         )
 
-    def store_band(
+    def store_ds(
         self,
         parcel_id: str,
-        band: str,
-        time: str,
+        index_type: str,
+        time: datetime,
         data: bytes = None,
         url: str = None,
     ):
         """
-        Store band information in PostgreSQL
+        Store a single timeserie dataset in PostgreSQL
         Either with binary data or with a URL
         """
         document = {
             "parcel_id": parcel_id,
-            "band": band,
+            "index_type": index_type,
             "datetime": time,
             "data": data,
             "url": url,
         }
         self.cursor.execute(
             """
-            INSERT INTO %(band)s (parcel_id, datetime, data, url)
+            INSERT INTO %(index_type)s (parcel_id, datetime, data, url)
             VALUES (%(parcel_id)s, %(datetime)s, %(data)s, %(url)s)
             ON CONFLICT (parcel_id, datetime) DO UPDATE
             SET value = excluded.value

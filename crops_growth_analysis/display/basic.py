@@ -15,7 +15,7 @@ def display_parcels(parcels: list[Parcel]):
     Display parcels with visual and ndvi
     For now, we just display the first time of first parcel
     """
-    display_parcel(parcels[0], parcels[0].bands.time[0])
+    display_parcel(parcels[0], parcels[0].timeseries.time[0])
 
 
 def display_parcel(parcel: Parcel, time: datetime.datetime):
@@ -26,7 +26,7 @@ def display_parcel(parcel: Parcel, time: datetime.datetime):
     """
     # Get images arrays
     visual = get_visual(parcel, time)
-    ndvi: xarray.DataArray = parcel.bands.sel(band="ndvi").sel(
+    ndvi: xarray.DataArray = parcel.timeseries.sel(index_type="ndvi").sel(
         time=time.replace(tzinfo=None), method="nearest"
     )
 

@@ -3,6 +3,8 @@ Module to store parcels and their NDVI and NDMI values in Minio
 backed by Postgresql or MongoDB metadata
 """
 
+from datetime import datetime
+
 import minio
 
 import crops_growth_analysis.store.mongodb as mongodb
@@ -16,7 +18,7 @@ class ParcelStorage(AbstractParcelStorage):
     """
     Parcel storage class
     Init client and create tables
-    Provides methods to store parcels and bands
+    Provides methods to store parcels and timeseries
     """
 
     def __init__(
@@ -53,23 +55,30 @@ class ParcelStorage(AbstractParcelStorage):
         """
         self.backend.store_parcel_info(parcel)
 
-    def store_band(
+    def store_ds(
         self,
         parcel_id: str,
-        band: str,
-        time: str,
+        index_type: str,
+        time: datetime,
         data: bytes = None,
         url: str = None,
     ):
         """
-        Store band in minio
+        Store a single timeserie dataset in Minio and metadata in backend
         """
-        object_name = f"{parcel_id}/{parcel_id}-{band}-{time}.nc"
-        self.minio_client.put_object(
-            band, object_name, data, len(data), "application/octet-stream"
+        time_dir = time.strftime("%Y/%m/%d")
+        object_name = (
+            f"{parcel_id}/{time_dir}/{parcel_id}-{index_type}-{time}.nc"
         )
-        object_url = f"{self.base_url}/{band}/{object_name}"
-        self.backend.store_band(parcel_id, band, time, url=object_url)
+        self.minio_client.put_object(
+            index_type,
+            object_name,
+            data,
+            len(data),
+            "application/octet-stream",
+        )
+        object_url = f"{self.base_url}/{index_type}/{object_name}"
+        self.backend.store_ds(parcel_id, index_type, time, url=object_url)
 
     def close(self):
         """

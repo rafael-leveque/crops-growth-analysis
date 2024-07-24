@@ -1,5 +1,7 @@
 """Module to store parcels and their NDVI and NDMI values in MongoDB"""
 
+from datetime import datetime
+
 import pymongo
 
 from crops_growth_analysis.extract.csv import Parcel
@@ -11,7 +13,7 @@ class ParcelStorage(AbstractParcelStorage):
     """
     Parcel storage class
     Init client and create collections
-    Provides methods to store parcels and bands
+    Provides methods to store parcels and timeseries
     """
 
     def __init__(self):
@@ -41,23 +43,23 @@ class ParcelStorage(AbstractParcelStorage):
             {"_id": parcel.id}, {"$set": document}, upsert=True
         )
 
-    def store_band(
+    def store_ds(
         self,
         parcel_id: str,
-        band: str,
-        time: str,
+        index_type: str,
+        time: datetime,
         data: bytes = None,
         url: str = None,
     ):
         """
-        Store band information in Mongo DB
+        Store a single timeserie dataset in Mongo DB
         Either with binary data or with a URL
         """
         document = {
             "parcel_id": parcel_id,
             "datetime": time,
         }
-        collection = self.ndvi if band == "ndvi" else self.ndmi
+        collection = self.ndvi if index_type == "ndvi" else self.ndmi
         collection.replace_one(
             document,
             {**document, "data": data, "url": url},

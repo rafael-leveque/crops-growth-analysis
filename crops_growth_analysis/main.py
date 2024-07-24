@@ -21,10 +21,10 @@ PROCESSING_METHOD = "external"
 
 # Set the database to use.
 # One of "postgresql", "minio" or "mongodb"
-DATABASE = "None"
+DATABASE = None
 
 # Set the log level
-log.set_level("INFO")
+log.setLevel("INFO")
 
 
 def main():
@@ -105,9 +105,9 @@ def process(parcels: list[csv.Parcel]) -> list[csv.Parcel]:
     for parcel in parcels:
         log.debug("Processing parcel %s", parcel.id)
         if PROCESSING_METHOD == "manual":
-            parcel.bands = manual.process_parcel(parcel)
+            parcel.timeseries = manual.process_parcel(parcel)
         else:
-            parcel.bands = external.process_parcel(parcel).compute()
+            parcel.timeseries = external.process_parcel(parcel).compute()
 
     return parcels
 
@@ -123,6 +123,8 @@ def store(parcels: list[csv.Parcel]):
         storage = minio.ParcelStorage()
     elif DATABASE == "mongodb":
         storage = mongodb.ParcelStorage()
+    else:
+        storage = None
 
     if storage:
         log.info("Storing parcels")

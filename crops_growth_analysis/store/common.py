@@ -1,7 +1,10 @@
 """Abstract class for storing parcels."""
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 from io import BytesIO
+
+from xarray import DataArray
 
 from crops_growth_analysis.extract.csv import Parcel
 from crops_growth_analysis.logger import log
@@ -9,33 +12,35 @@ from crops_growth_analysis.logger import log
 
 class AbstractParcelStorage(ABC):
     """
-    An abstract class for storing parcels.
+    An abstract class to interact with database to store parcels timeseries.
     """
 
-    def store_parcel(self, parcel):
+    def store_parcel(self, parcel: Parcel):
         """
         Store the parcel.
         """
         # Store parcel information
         log.debug("Storing parcel information")
         self.store_parcel_info(parcel)
-        # Store bands information
-        log.debug("Storing bands information")
-        for band_ds in parcel.bands:
-            for time_ds in band_ds:
-                current_band = time_ds["band"].item()
-                current_time = time_ds["time"].item()
+        # Store timeseries
+        log.debug("Storing timeseries")
+        timeserie: DataArray
+        ds: DataArray
+        for timeserie in parcel.timeseries:
+            for ds in timeserie:
+                index_type: str = ds["index_type"].item()
+                time: datetime = ds["time"].item()
                 log.debug(
-                    "Storing band %s and time %s",
-                    current_band,
-                    current_time,
+                    "Storing index type %s and time %s",
+                    index_type,
+                    time,
                 )
                 netcdf_buffer = BytesIO()
-                time_ds.to_netcdf(netcdf_buffer)
-                self.store_band(
+                ds.to_netcdf(netcdf_buffer)
+                self.store_ds(
                     parcel.id,
-                    current_band,
-                    current_time,
+                    index_type,
+                    time,
                     netcdf_buffer.getvalue(),
                 )
         log.debug("Parcel stored")
@@ -48,16 +53,16 @@ class AbstractParcelStorage(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def store_band(
+    def store_ds(
         self,
         parcel_id: str,
-        band: str,
-        time: str,
+        index_type: str,
+        time: datetime,
         data: bytes = None,
         url: str = None,
     ):
         """
-        Store the band information.
+        Store a single timeserie dataset.
         """
         raise NotImplementedError
 

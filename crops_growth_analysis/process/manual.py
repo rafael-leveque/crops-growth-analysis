@@ -8,7 +8,9 @@ from crops_growth_analysis.process.images import ItemImages
 
 
 def process_parcel(parcel: csv.Parcel) -> xarray.DataArray:
-    """Process a parcel"""
+    """
+    Process a parcel. Calculate NDVI and NDMI from each time of the parcel.
+    """
     data_arrays: list[xarray.DataArray] = []
     for item in parcel.sentinel_items:
         images = ItemImages(item, parcel.polygon)
@@ -18,7 +20,6 @@ def process_parcel(parcel: csv.Parcel) -> xarray.DataArray:
         del scl
         log.debug("Calculating NDVI")
         red = images.load("B04")
-        log.debug("Calculate NDVI")
         ndvi = (nir - red) / (nir + red)
         del red
         log.debug("Calculating NDMI")
@@ -29,9 +30,9 @@ def process_parcel(parcel: csv.Parcel) -> xarray.DataArray:
         data_arrays.append(
             xarray.DataArray(
                 data=[ndvi, ndmi],
-                dims=["band", "y", "x"],
+                dims=["index_type", "y", "x"],
                 coords={
-                    "band": ["ndvi", "ndmi"],
+                    "index_type": ["ndvi", "ndmi"],
                     "y": ndvi.y,
                     "x": ndvi.x,
                 },
@@ -40,5 +41,5 @@ def process_parcel(parcel: csv.Parcel) -> xarray.DataArray:
         del ndvi, ndmi
     log.debug("Concatenating results")
     return xarray.concat(data_arrays, dim="time").assign_coords(
-        coords={"time": [item.datetime for item in parcel.sentinel_items]}
+        time=[item.datetime for item in parcel.sentinel_items]
     )

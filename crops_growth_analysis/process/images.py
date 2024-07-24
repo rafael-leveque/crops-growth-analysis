@@ -4,11 +4,11 @@ Module to load images from Sentinel-2 data
 
 import numpy
 import rasterio
-import xarray
 import shapely.ops
+import xarray
 from PIL import Image
-from pystac import Item
 from pyproj import CRS, Transformer
+from pystac import Item
 from shapely.geometry import Polygon
 
 from crops_growth_analysis.logger import log
