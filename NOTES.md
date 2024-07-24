@@ -28,6 +28,17 @@ Now with bounds, Memory is not an issue at all :
 
 Next step may be to use dask to parallelize the process (stackstac is already using it, maybe that explains the time difference).
 
+## Results
+
+Currently, when watching the first parcel, two things are noticeable:
+
+- Definition is really bad. Now, It's possible to use interpolation to get a better definition.
+  Question is, should we interpolate and store interpolated data, or keep it as is and interpolate when needed?
+- The polygon seems to be a bit off, even though the shape looks familiar.
+  May be intersting to investigate, some coordinates may have been badly converted.
+
+The ndvi data on the other hand seems to be correct. It matches what may be interpreted from the actual image.
+
 ## Database choice
 
 Three main solutions are available for storing data:
