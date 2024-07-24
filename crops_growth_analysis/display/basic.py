@@ -122,13 +122,11 @@ def apply_color_function(ndvi: xarray.DataArray) -> numpy.array:
 def ndvi_to_color(ndvi_value: float) -> tuple[float, float, float, float]:
     """
     Convert NDVI value to color
-    May use a gradiant for better display.
-    We'll keep it like that for now.
     """
-    opacity = 0.15
-    if ndvi_value < 0.33:
-        return (1, 0, 0, opacity)  # Red with 50% opacity
-    elif ndvi_value < 0.66:
-        return (1, 1, 0, opacity)  # Yellow with 50% opacity
+    opacity = 1
+    if ndvi_value < 0:
+        # Return black
+        return (0, 0, 0, opacity)
     else:
-        return (0, 1, 0, opacity)  # Green with 50% opacity
+        # Return green gradiant
+        return (0, ndvi_value, 0, opacity)
