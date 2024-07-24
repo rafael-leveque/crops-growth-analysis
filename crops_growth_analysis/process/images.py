@@ -4,12 +4,13 @@ Module to load images from Sentinel-2 data
 
 import numpy
 import rasterio
+import rasterio.mask
 import shapely.ops
 import xarray
 from PIL import Image
 from pyproj import CRS, Transformer
 from pystac import Item
-from shapely.geometry import Polygon
+from shapely.geometry import Point, Polygon
 
 from crops_growth_analysis.logger import log
 
@@ -68,4 +69,15 @@ class ItemImages:
                 coords=new_coords,
                 name=band,
             )
+            data_array = self.mask(data_array)
         return data_array
+
+    def mask(self, bands: xarray.DataArray) -> xarray.DataArray:
+        """Mask bands with parcel"""
+        mask = xarray.apply_ufunc(
+            numpy.vectorize(lambda x, y: self.parcel.contains(Point(x, y))),
+            bands["x"],
+            bands["y"],
+            vectorize=True,
+        )
+        return bands.where(mask)
